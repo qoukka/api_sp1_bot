@@ -14,7 +14,7 @@ CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
-    if homework_name == None:
+    if homework_name is None:
         return "Неверный ключ доступа"
     else:
         status = homework['status']  
@@ -26,7 +26,7 @@ def parse_homework_status(homework):
 
 
 def get_homework_statuses(current_timestamp):
-    if current_timestamp != None:
+    if current_timestamp is not None:
         headers = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
         params = {'from_date': current_timestamp}
         homework_statuses = requests.get('https://praktikum.yandex.ru/api/user_api/homework_statuses/',
