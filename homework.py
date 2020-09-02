@@ -3,6 +3,8 @@ import requests
 import telegram
 import time
 from dotenv import load_dotenv
+import logging
+
 
 load_dotenv()
 
@@ -16,13 +18,12 @@ def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
     if homework_name is None:
         return "Неверный ключ доступа"
+    status = homework['status']  
+    if status != 'approved':
+        verdict = 'К сожалению в работе нашлись ошибки.'
     else:
-        status = homework['status']  
-        if status != 'approved':
-            verdict = 'К сожалению в работе нашлись ошибки.'
-        else:
-            verdict = 'Ревьюеру всё понравилось, можно приступать к следующему уроку.'
-        return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
+        verdict = 'Ревьюеру всё понравилось, можно приступать к следующему уроку.'
+    return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
 def get_homework_statuses(current_timestamp):
@@ -30,10 +31,13 @@ def get_homework_statuses(current_timestamp):
         current_timestamp = int(time.time())
     headers = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
     params = {'from_date': current_timestamp}
-    homework_statuses = requests.get('https://praktikum.yandex.ru/api/user_api/homework_statuses/',
+    try:
+        homework_statuses = requests.get('https://praktikum.yandex.ru/api/user_api/homework_statuses/',
                                      params=params, headers=headers)
-    return homework_statuses.json()
+        return homework_statuses.json()
 
+    except Exception as e:
+        logging.error(e)
 
 
 def send_message(message):
