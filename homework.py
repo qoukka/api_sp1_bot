@@ -18,7 +18,9 @@ def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
     if homework_name is None:
         return "Неверный ключ доступа"
-    status = homework['status']  
+    status = homework.get('status')
+    if status is None:
+        return "Нет статуса"
     if status != 'approved':
         verdict = 'К сожалению в работе нашлись ошибки.'
     else:
